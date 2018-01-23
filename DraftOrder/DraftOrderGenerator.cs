@@ -27,7 +27,6 @@ namespace DraftOrder
         public DraftOrderGenerator()
         {
             InitializeComponent();
-            //tmrTimer.Stop();
             RandomListGenerator();
         }
         /// <summary>
@@ -41,7 +40,6 @@ namespace DraftOrder
 
             if (reset == DialogResult.Yes)
                 RandomListGenerator();
-
         }
         /// <summary>
         /// Quit button was clicked. Prompt user first
@@ -69,18 +67,15 @@ namespace DraftOrder
             {
                 var row = new ExpandoObject() as IDictionary<string, Object>;
 
-                List<string> people = users.ToList();
-
-                List<string> shuffledUsers = ShuffleList<string>(people);
+                List<string> people = users.OrderBy(o => Guid.NewGuid()).ToList();
 
                 for (int k = 0; k < users.Count(); k++)
                 {
                     int userNumber = k + 1;
-                    row.Add($"User {userNumber.ToString()}", shuffledUsers[k]);
+                    row.Add($"User {userNumber.ToString()}", people[k]);
                 }
 
                 data.Add(row);
-
             }
 
             DataTable dt = ToDataTable(data);
@@ -88,26 +83,6 @@ namespace DraftOrder
             grdResults.DataSource = dt;
             for (int z = 0; z < grdResults.ColumnCount; z++)
                 grdResults.Columns[z].SortMode = DataGridViewColumnSortMode.NotSortable;
-        }
-        /// <summary>
-        /// Shuffles the data
-        /// </summary>
-        /// <typeparam name="E">The type to be randomized</typeparam>
-        /// <param name="inputList">List list of data to be randomized</param>
-        /// <returns></returns>
-        private List<E> ShuffleList<E>(List<E> inputList)
-        {
-            List<E> randomList = new List<E>();
-            
-            int randomIndex = 0;
-            while (inputList.Count > 0)
-            {
-                randomIndex = r.Next(0, inputList.Count); //Choose a random object in the list
-                randomList.Add(inputList[randomIndex]); //add it to the new, random list
-                inputList.RemoveAt(randomIndex); //remove to avoid duplicates
-            }
-
-            return randomList; //return the new random list
         }
         /// <summary>
         /// Convert dynamic list to DataTable for binding to grid
@@ -144,13 +119,10 @@ namespace DraftOrder
             }
 
             lblTimer.Text = dt.AddSeconds(counter).ToString("HH:mm:ss");
-            //d = new DateTime()
-            //   lblTimer.Text = DateTime.Now.ToString();
         }
 
         private void btnTimer_Click(object sender, EventArgs e)
         {
-
             if (timerRunning == false)
             {
                 if (counter == 0)
